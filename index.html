@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plainhand: take the chatbot voice out of your draft</title>
+<meta name="description" content="Plainhand scans AI-assisted writing for the habits that make it sound machine-made, then rewrites them out without touching your facts.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%231f3a2e'/><text x='16' y='23' font-size='19' text-anchor='middle' fill='%23f4efe4' font-family='Georgia'>P</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="nav">
+  <a class="brand" href="#"><span class="mark">P</span>Plainhand</a>
+  <nav><a href="#tool">Tool</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a></nav>
+</header>
+
+<section class="hero">
+  <p class="eyebrow">For drafts you wrote with AI help</p>
+  <h1>Your draft, minus the chatbot voice.</h1>
+  <p class="lede">Plainhand checks your text for 62 machine-checked habits of AI prose (stock words, staged contrasts, dash chains, bold-label lists) and rewrites them out. Your facts, numbers, code and citations stay exactly as they were.</p>
+  <div class="cta"><a class="btn primary" href="#tool">Try it free</a><a class="btn ghost" href="#pricing">Pricing</a></div>
+</section>
+
+<section id="tool" class="tool">
+  <div class="pane">
+    <div class="pane-head">
+      <h2>Your draft</h2>
+      <div class="tools">
+        <label class="chip" title="Read text from a screenshot or photo">Image to text<input id="imgIn" type="file" accept="image/*" hidden></label>
+        <label class="chip">Open file<input id="fileIn" type="file" accept=".txt,.md,.markdown,.tex,.html" hidden></label>
+        <button class="chip" id="sampleBtn">Example</button>
+      </div>
+    </div>
+    <textarea id="input" placeholder="Paste text here, drop a .txt or .md file, or paste a screenshot (Ctrl/Cmd+V)."></textarea>
+    <div id="ocrStatus" class="status" hidden></div>
+    <div class="row">
+      <label>Style
+        <select id="mode">
+          <option value="general">General</option>
+          <option value="casual">Casual</option>
+          <option value="professional">Email / report</option>
+          <option value="academic">Academic</option>
+          <option value="technical">Technical spec</option>
+        </select>
+      </label>
+      <span class="count" id="inCount">0 words</span>
+    </div>
+    <details class="voice">
+      <summary>Match my voice (optional)</summary>
+      <textarea id="sample" placeholder="Paste a paragraph or two you wrote yourself. The rewrite copies its sentence length, punctuation and word choice."></textarea>
+    </details>
+    <div class="actions">
+      <button class="btn" id="scanBtn">Scan</button>
+      <button class="btn" id="cleanBtn" title="Instant rule-based fixes: dashes, curly quotes, bold, filler phrases, chatbot openers and sign-offs, invisible characters">Quick clean</button>
+      <button class="btn primary" id="rewriteBtn">Deep rewrite</button>
+    </div>
+    <p class="hint" id="engineHint">Loading the scanner (first load is about 10 MB)...</p>
+  </div>
+
+  <div class="pane">
+    <div class="pane-head">
+      <h2>Result</h2>
+      <div class="tools"><button class="chip" id="copyBtn">Copy</button><button class="chip" id="useBtn" title="Move the result into the draft box">Edit further</button></div>
+    </div>
+    <textarea id="output" placeholder="The cleaned or rewritten text shows up here." readonly></textarea>
+    <div class="scores">
+      <div class="score" id="scoreBefore"><span class="lbl">Draft</span><span class="num">-</span><span class="band"></span></div>
+      <div class="arrow">to</div>
+      <div class="score" id="scoreAfter"><span class="lbl">Result</span><span class="num">-</span><span class="band"></span></div>
+    </div>
+    <p class="hint">AI-tell score from 0 (clean) to 100 (pervasive). It counts writing habits. It is not a prediction of what any detector will say.</p>
+    <div id="findings"></div>
+  </div>
+</section>
+
+<section class="keys" id="keys">
+  <h3>Deep rewrite access</h3>
+  <p>Deep rewrite runs Claude with the full rewrite rules. Use a Pro license key, or your own Anthropic API key. Keys stay in this browser's storage and go only to the API they belong to.</p>
+  <div class="keyrow">
+    <label>Pro license key<input id="licenseKey" type="password" placeholder="ph_live_..." autocomplete="off"></label>
+    <label>or Anthropic API key<input id="apiKey" type="password" placeholder="sk-ant-..." autocomplete="off"></label>
+    <button class="btn" id="saveKeys">Save</button>
+  </div>
+  <p class="status" id="keyStatus"></p>
+</section>
+
+<section class="how">
+  <div><h4>Scan</h4><p>The scanner is sloptrim's open detector running in your browser through Pyodide. It flags each pattern with examples and scores the text. Nothing is uploaded.</p></div>
+  <div><h4>Quick clean</h4><p>Fixes that need no judgment: dashes, curly quotes, bold, filler like "in order to", chatbot openers and sign-offs, invisible characters and look-alike letters. Code is left alone. Free and instant.</p></div>
+  <div><h4>Deep rewrite</h4><p>Claude rewrites the sentences that rules can't fix, such as staged contrasts, forced lists of three and empty closers, and keeps every claim. Then it rescans so you see what changed.</p></div>
+</section>
+
+<section id="pricing" class="pricing">
+  <h2>Pricing</h2>
+  <div class="plans">
+    <div class="plan">
+      <h3>Free</h3>
+      <p class="price">$0</p>
+      <ul>
+        <li>Unlimited scans and quick cleans</li>
+        <li>Image to text</li>
+        <li>Deep rewrite with your own Anthropic key</li>
+      </ul>
+      <a class="btn ghost" href="#tool">Start</a>
+    </div>
+    <div class="plan pro">
+      <h3>Pro</h3>
+      <p class="price" id="proPrice">$9 / month</p>
+      <ul>
+        <li><span id="proQuota">150</span> deep rewrites a month, no API key needed</li>
+        <li>Voice matching and all five styles</li>
+        <li>Up to 2,000 words per rewrite</li>
+      </ul>
+      <a class="btn primary" id="buyBtn" href="#">Get Pro</a>
+      <p class="tiny" id="buyNote"></p>
+    </div>
+  </div>
+</section>
+
+<section id="faq" class="faq">
+  <h2>Questions</h2>
+  <details><summary>Will this get my text past AI detectors?</summary><p>No tool can promise that, and Plainhand doesn't try to. It removes the writing habits people notice and edits toward your own voice. If a school, client or platform asks you to disclose AI use or forbids it, those rules still apply to text you ran through Plainhand.</p></details>
+  <details><summary>Does it change my facts?</summary><p>The rewrite rules forbid adding or dropping facts, names, numbers, dates, quotes and citations, and code, paths and URLs are kept verbatim. Read the result before you use it, the same as with any editor.</p></details>
+  <details><summary>Is my text stored?</summary><p>Scan, quick clean and image-to-text run entirely in your browser. A deep rewrite sends the text to Anthropic's API (directly with your key, or through our relay with Pro). The relay keeps only your monthly usage count.</p></details>
+  <details><summary>What is the score?</summary><p>A count of AI-writing patterns, weighted and scaled to 0 to 100. Under about 50 words it is noise, and the tool says so.</p></details>
+</section>
+
+<footer>
+  <p>Scanner: <a href="licenses/sloptrim-APACHE-2.0.txt">sloptrim detect.py</a> (Apache-2.0). Rewrite rules adapted from the humanizer skill (MIT), based on Wikipedia's <a href="https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing">Signs of AI writing</a>. OCR by Tesseract.js.</p>
+</footer>
+
+<div id="toast" class="toast" hidden></div>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js" defer></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>

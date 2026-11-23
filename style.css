@@ -1,0 +1,81 @@
+:root{
+  --paper:#f4efe4; --card:#fffdf8; --ink:#1d1b17; --muted:#6b645a; --line:#e2d9c7;
+  --green:#1f3a2e; --green2:#2f5a46; --amber:#c2702a; --red:#a63d2f;
+  --serif:"Fraunces",Georgia,serif; --sans:"Inter",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 var(--sans)}
+a{color:var(--green2)}
+.nav{display:flex;justify-content:space-between;align-items:center;padding:18px 6vw;position:sticky;top:0;background:rgba(244,239,228,.9);backdrop-filter:blur(8px);z-index:5;border-bottom:1px solid var(--line)}
+.brand{font:700 20px var(--serif);color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:10px}
+.mark{width:30px;height:30px;border-radius:8px;background:var(--green);color:var(--paper);display:grid;place-items:center;font-size:17px}
+.nav nav a{margin-left:22px;color:var(--ink);text-decoration:none;font-weight:500}
+.hero{padding:80px 6vw 50px;max-width:900px}
+.eyebrow{text-transform:uppercase;letter-spacing:.12em;font-size:12px;color:var(--amber);font-weight:600;margin:0 0 14px}
+h1{font:700 clamp(40px,6vw,68px)/1.04 var(--serif);margin:0 0 20px;letter-spacing:-.02em}
+.lede{font-size:19px;color:var(--muted);max-width:680px;margin:0 0 30px}
+.cta{display:flex;gap:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--ink);background:var(--card);color:var(--ink);padding:11px 20px;border-radius:999px;font:600 15px var(--sans);cursor:pointer;text-decoration:none;transition:transform .12s,background .12s}
+.btn:hover{transform:translateY(-1px)}
+.btn.primary{background:var(--green);border-color:var(--green);color:var(--paper)}
+.btn.ghost{background:transparent}
+.btn:disabled{opacity:.5;cursor:wait;transform:none}
+.tool{display:grid;grid-template-columns:1fr 1fr;gap:22px;padding:20px 6vw 30px}
+.pane{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px;box-shadow:0 10px 30px -18px rgba(40,30,10,.35);display:flex;flex-direction:column;min-width:0}
+.pane-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.pane h2{font:600 20px var(--serif);margin:0}
+.tools{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:5px 12px;font:500 13px var(--sans);cursor:pointer;color:var(--ink)}
+.chip:hover{border-color:var(--ink)}
+textarea{width:100%;min-height:300px;resize:vertical;border:1px solid var(--line);border-radius:12px;padding:14px;font:15px/1.6 var(--sans);background:#fffefb;color:var(--ink)}
+textarea:focus,input:focus,select:focus{outline:2px solid var(--green2);outline-offset:1px}
+.voice textarea{min-height:110px;margin-top:8px}
+.voice summary{cursor:pointer;font-weight:500;color:var(--green2);margin:10px 0 0}
+.row{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+select,input{font:14px var(--sans);padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#fffefb;margin-left:6px}
+.count{color:var(--muted);font-size:13px}
+.actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.hint{font-size:13px;color:var(--muted);margin:10px 0 0}
+.status{font-size:13px;color:var(--green2);margin:8px 0 0}
+.status.err{color:var(--red)}
+.scores{display:flex;align-items:center;gap:14px;margin-top:14px}
+.score{flex:1;border:1px solid var(--line);border-radius:14px;padding:10px 14px;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:12px;background:var(--paper)}
+.score .lbl{grid-column:1/3;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.score .num{font:700 34px/1.1 var(--serif)}
+.score .band{align-self:center;font-weight:600;font-size:14px}
+.arrow{color:var(--muted);font-size:13px}
+.lvl-clean .num,.lvl-clean .band{color:var(--green2)}
+.lvl-light .num,.lvl-light .band{color:#5d7a3a}
+.lvl-mixed .num,.lvl-mixed .band{color:var(--amber)}
+.lvl-heavy .num,.lvl-heavy .band{color:var(--red)}
+#findings{margin-top:14px;display:flex;flex-direction:column;gap:8px;max-height:320px;overflow:auto}
+.find{border-left:3px solid var(--amber);background:var(--paper);padding:8px 12px;border-radius:0 10px 10px 0;font-size:14px}
+.find b{font-weight:600}
+.find .n{color:var(--muted);font-size:12px;margin-left:6px}
+.find code{display:block;font:12px/1.5 var(--mono);color:var(--muted);margin-top:4px;white-space:pre-wrap;word-break:break-word}
+.keys{margin:10px 6vw 30px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 24px}
+.keys h3{font:600 20px var(--serif);margin:0 0 6px}
+.keys p{color:var(--muted);margin:0 0 12px;font-size:14px}
+.keyrow{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap}
+.keyrow label{display:flex;flex-direction:column;font-size:13px;font-weight:500;gap:4px}
+.keyrow input{margin:0;width:280px}
+.how{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;padding:40px 6vw}
+.how h4{font:600 19px var(--serif);margin:0 0 6px}
+.how p{margin:0;color:var(--muted);font-size:15px}
+.pricing,.faq{padding:40px 6vw}
+.pricing h2,.faq h2{font:700 36px var(--serif);margin:0 0 22px}
+.plans{display:grid;grid-template-columns:repeat(2,minmax(0,360px));gap:22px}
+.plan{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px;display:flex;flex-direction:column}
+.plan.pro{border:2px solid var(--green)}
+.plan h3{font:600 22px var(--serif);margin:0}
+.price{font:700 34px var(--serif);margin:8px 0 10px}
+.plan ul{padding-left:18px;margin:0 0 20px;flex:1}
+.plan li{margin:6px 0}
+.tiny{font-size:12px;color:var(--muted);margin:8px 0 0}
+.faq details{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:10px;max-width:820px}
+.faq summary{cursor:pointer;font-weight:600}
+.faq p{color:var(--muted);margin:10px 0 0}
+footer{padding:30px 6vw 50px;color:var(--muted);font-size:13px;border-top:1px solid var(--line)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 18px;border-radius:999px;font-size:14px;z-index:20}
+.dropping #input{outline:2px dashed var(--green2)}
+@media (max-width:860px){.tool,.how{grid-template-columns:1fr}.plans{grid-template-columns:1fr}.keyrow input{width:100%}}
