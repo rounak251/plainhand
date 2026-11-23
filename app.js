@@ -1,5 +1,6 @@
 import { SYSTEM_PROMPT, buildUserMessage, buildRevisionMessage, MAX_WORDS } from "./prompt.js";
 import { humanize } from "./humanize.js";
+import { localRewrite, webgpuReady, LOCAL_MODEL_LABEL } from "./localai.js";
 import { API_BASE, PAYMENT_LINK, PRO_PRICE, PRO_QUOTA } from "./config.js";
 
 const $ = (id) => document.getElementById(id);
@@ -110,26 +111,23 @@ $("cleanBtn").onclick = async () => {
     const cleaned = humanize(charClean, $("mode").value);
     output.value = cleaned;
     const after = await scan(cleaned);
-    paintScore($("scoreBefore"), before); paintScore($("scoreAfter"), after); paintFindings(after, after._metrics?.ai_tell_score > 20 ? "Still flagged (Deep rewrite fixes these)" : "Still flagged");
+    paintScore($("scoreBefore"), before); paintScore($("scoreAfter"), after); paintFindings(after, after._metrics?.ai_tell_score > 20 ? "Still flagged (AI rewrite fixes these)" : "Still flagged");
   } catch (e) { toast("Quick clean failed: " + e.message); }
   busy($("cleanBtn"), false);
 };
 
 $("rewriteBtn").onclick = async () => {
   const t = needText(); if (!t) return;
-  if (words(t) > MAX_WORDS) return toast(`Deep rewrite takes up to ${MAX_WORDS} words at a time. Split the text.`, 4000);
+  if (words(t) > MAX_WORDS) return toast(`AI rewrite takes up to ${MAX_WORDS} words at a time. Split the text.`, 4000);
   const license = localStorage.getItem("ph_license") || "";
   const apiKey = localStorage.getItem("ph_apikey") || "";
-  if (!(license && API_BASE) && !apiKey) {
-    $("keys").scrollIntoView({ behavior: "smooth" });
-    return toast("Add a Pro license key or your own Anthropic key to use deep rewrite.", 4000);
-  }
+  const pro = !!(license && API_BASE);
+  if (!pro && !apiKey) return runLocal(t);
   busy($("rewriteBtn"), true, "Rewriting...");
   try {
     const before = await scan(t);
     paintScore($("scoreBefore"), before); resetScore($("scoreAfter"));
     const opts = { mode: $("mode").value, sample: $("sample").value, flagged: flaggedLabels(before) };
-    const pro = !!(license && API_BASE);
     const polish = async (raw) => humanize(await callPy("clean", raw), opts.mode);
 
     const r1 = pro ? await callPro(license, { text: t, ...opts }) : { text: await callClaude(apiKey, buildUserMessage(t, opts)) };
@@ -148,6 +146,43 @@ $("rewriteBtn").onclick = async () => {
   } catch (e) { toast(e.message, 5000); }
   busy($("rewriteBtn"), false);
 };
+
+// Free path: the small model on the visitor's GPU, then the rule engine.
+async function runLocal(t) {
+  const st = $("aiStatus");
+  if (!(await webgpuReady())) {
+    st.hidden = false;
+    st.textContent = "The free AI needs WebGPU (desktop Chrome or Edge, or Safari 26+). On this browser, use Humanize, or add a key below.";
+    return;
+  }
+  const mode = $("mode").value;
+  busy($("rewriteBtn"), true, "Loading AI...");
+  st.hidden = false; st.classList.remove("err");
+  try {
+    const before = await scan(t);
+    paintScore($("scoreBefore"), before); resetScore($("scoreAfter"));
+    output.value = "";
+    let started = false;
+    const pre = humanize(await callPy("clean", t), mode);  // strip the obvious tells first so the small model copies fewer of them
+    const raw = await localRewrite(pre, mode, {
+      onProgress: (p, attempt) => { st.textContent = (attempt > 1 ? "Connection dropped, resuming. " : "") + "First run downloads the free AI model (about 2-3 GB, then cached): " + Math.round((p.progress || 0) * 100) + "%. " + (p.text || "").replace(/\[.*?\]\s*/g, "").slice(0, 80); },
+      onText: (txt) => {
+        if (!started) { started = true; $("rewriteBtn").textContent = "Rewriting..."; st.textContent = `Rewriting on your device with ${LOCAL_MODEL_LABEL}...`; }
+        output.value = txt;
+      },
+    });
+    const text = humanize(await callPy("clean", raw), mode), after = await scan(text);
+    output.value = text;
+    paintScore($("scoreAfter"), after); paintFindings(after, "Result");
+    st.textContent = `Rewritten on your device by ${LOCAL_MODEL_LABEL}. Pro uses Claude for stronger rewrites.`;
+  } catch (e) {
+    const msg = (e && (e.message || e.reason || (typeof e === "string" ? e : JSON.stringify(e)))) || "unknown error";
+    console.error("local AI", e);
+    st.textContent = "The free AI failed: " + msg + ". Click AI rewrite again to resume; downloaded parts are kept.";
+    st.classList.add("err");
+  }
+  busy($("rewriteBtn"), false);
+}
 
 const issuesOf = (report) => Object.entries(report)
   .filter(([k, v]) => k !== "_metrics" && v && v.count > 0)

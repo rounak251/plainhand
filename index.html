@@ -54,8 +54,9 @@
     <div class="actions">
       <button class="btn" id="scanBtn">Scan</button>
       <button class="btn" id="cleanBtn" title="Free, instant, runs in your browser">Humanize</button>
-      <button class="btn primary" id="rewriteBtn">Deep rewrite (AI)</button>
+      <button class="btn primary" id="rewriteBtn">AI rewrite</button>
     </div>
+    <p class="status" id="aiStatus" hidden></p>
     <p class="hint" id="engineHint">Loading the scanner (first load is about 10 MB)...</p>
   </div>
 
@@ -76,8 +77,8 @@
 </section>
 
 <section class="keys" id="keys">
-  <h3>Deep rewrite access</h3>
-  <p>Deep rewrite runs Claude with the full rewrite rules. Use a Pro license key, or your own Anthropic API key. Keys stay in this browser's storage and go only to the API they belong to.</p>
+  <h3>Stronger AI rewrite (optional)</h3>
+  <p>AI rewrite works free with no key: a small model runs on your own device. For stronger rewrites by Claude, use a Pro license key or your own Anthropic API key. Keys stay in this browser's storage and go only to the API they belong to.</p>
   <div class="keyrow">
     <label>Pro license key<input id="licenseKey" type="password" placeholder="ph_live_..." autocomplete="off"></label>
     <label>or Anthropic API key<input id="apiKey" type="password" placeholder="sk-ant-..." autocomplete="off"></label>
@@ -89,7 +90,7 @@
 <section class="how">
   <div><h4>Scan</h4><p>The scanner is sloptrim's open detector running in your browser through Pyodide. It flags each pattern with examples and scores the text. Nothing is uploaded.</p></div>
   <div><h4>Humanize</h4><p>Fixes that need no judgment: dashes, curly quotes, bold, filler like "in order to", chatbot openers and sign-offs, invisible characters and look-alike letters. It also swaps stock AI words for plain ones, rewrites "not just X, it's Y" contrasts, cuts empty closers and throat-clearing openers, fixes Title Case headings and adds contractions. Code is left alone. Free and instant.</p></div>
-  <div><h4>Deep rewrite</h4><p>Claude rewrites the sentences that rules can't fix, such as staged contrasts, forced lists of three and empty closers, and keeps every claim. It then rescans the result, and if the scanner still flags spots, it runs a second, targeted pass on just those.</p></div>
+  <div><h4>AI rewrite</h4><p>Free: a small open model rewrites your text on your own GPU, so nothing leaves your device. Pro: Claude rewrites the sentences that rules can't fix, such as staged contrasts, forced lists of three and empty closers, and keeps every claim. It then rescans the result, and if the scanner still flags spots, it runs a second, targeted pass on just those.</p></div>
 </section>
 
 <section id="pricing" class="pricing">
@@ -101,7 +102,8 @@
       <ul>
         <li>Unlimited scans and Humanize runs</li>
         <li>Image to text</li>
-        <li>Deep rewrite with your own Anthropic key</li>
+        <li>AI rewrite on your own device (desktop Chrome or Edge)</li>
+        <li>Claude rewrites with your own Anthropic key</li>
       </ul>
       <a class="btn ghost" href="#tool">Start</a>
     </div>
@@ -109,7 +111,7 @@
       <h3>Pro</h3>
       <p class="price" id="proPrice">₹200 / month</p>
       <ul>
-        <li><span id="proQuota">30</span> deep rewrites a month, no API key needed</li>
+        <li><span id="proQuota">30</span> Claude rewrites a month, no API key needed</li>
         <li>Voice matching and all five styles</li>
         <li>Up to 2,000 words per rewrite</li>
       </ul>
@@ -123,7 +125,7 @@
   <h2>Questions</h2>
   <details><summary>Will this get my text past AI detectors?</summary><p>No tool can promise that, and Plainhand doesn't try to. It removes the writing habits people notice and edits toward your own voice. If a school, client or platform asks you to disclose AI use or forbids it, those rules still apply to text you ran through Plainhand.</p></details>
   <details><summary>Does it change my facts?</summary><p>The rewrite rules forbid adding or dropping facts, names, numbers, dates, quotes and citations, and code, paths and URLs are kept verbatim. Read the result before you use it, the same as with any editor.</p></details>
-  <details><summary>Is my text stored?</summary><p>Scan, quick clean and image-to-text run entirely in your browser. A deep rewrite sends the text to Anthropic's API (directly with your key, or through our relay with Pro). The relay keeps only your monthly usage count.</p></details>
+  <details><summary>Is my text stored?</summary><p>Scan, Humanize, image-to-text and the free AI rewrite run entirely on your device. A Claude rewrite sends the text to Anthropic's API (directly with your key, or through our relay with Pro). The relay keeps only your monthly usage count.</p></details>
   <details><summary>What is the score?</summary><p>A count of AI-writing patterns, weighted and scaled to 0 to 100. Under about 50 words it is noise, and the tool says so.</p></details>
 </section>
 

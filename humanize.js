@@ -138,7 +138,7 @@ const DEAD_SENTENCES = [
   /(?:^|[ \t]+)(?:Let's|Let us) (?:dive|jump|delve) (?:in|into it|right in)[^.!?\n]*[.!?]/gim,
   /(?:^|[ \t]+)(?:Let's|Let us) (?:explore|break (?:it|this|that) down|take a (?:closer |deeper )?look)[^.!?\n]{0,60}[.!:]/gim,
   /(?:^|[ \t]+)Here's (?:what you need to know|why (?:it|this|that) matters|the (?:breakdown|kicker|deal))[.:!]/gim,
-  /(?:^|[ \t]+)(?:The future (?:looks|is) (?:bright|promising)|Exciting times (?:lie|are) ahead|Only time will tell|The possibilities are (?:endless|limitless)|The sky's the limit)[^.!?\n]*[.!]/gim,
+  /(?:^|[ \t]+)(?:The future (?:looks|is|seems|appears) (?:very |really )?(?:bright|promising|good|exciting|positive)|The best is yet to come|Exciting times (?:lie|are) ahead|Only time will tell|The possibilities are (?:endless|limitless)|The sky's the limit)[^.!?\n]*[.!]/gim,
   /(?:^|[ \t]+)(?:And )?(?:That's|That is) (?:the real|what makes|why it) [^.!?\n]{0,60}(?:win|matters|special|powerful|different)[.!]/gim,
   /(?:^|[ \t]+)(?:Let that sink in|Read that again|Think about that)[.!]/gim,
   /(?:^|[ \t]+)[^.!?\n]{0,40}\bis a journey,? not a destination[.!]/gim,
