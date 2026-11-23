@@ -53,8 +53,8 @@
     </details>
     <div class="actions">
       <button class="btn" id="scanBtn">Scan</button>
-      <button class="btn" id="cleanBtn" title="Instant rule-based fixes: dashes, curly quotes, bold, filler phrases, chatbot openers and sign-offs, invisible characters">Quick clean</button>
-      <button class="btn primary" id="rewriteBtn">Deep rewrite</button>
+      <button class="btn" id="cleanBtn" title="Free, instant, runs in your browser">Humanize</button>
+      <button class="btn primary" id="rewriteBtn">Deep rewrite (AI)</button>
     </div>
     <p class="hint" id="engineHint">Loading the scanner (first load is about 10 MB)...</p>
   </div>
@@ -88,8 +88,8 @@
 
 <section class="how">
   <div><h4>Scan</h4><p>The scanner is sloptrim's open detector running in your browser through Pyodide. It flags each pattern with examples and scores the text. Nothing is uploaded.</p></div>
-  <div><h4>Quick clean</h4><p>Fixes that need no judgment: dashes, curly quotes, bold, filler like "in order to", chatbot openers and sign-offs, invisible characters and look-alike letters. Code is left alone. Free and instant.</p></div>
-  <div><h4>Deep rewrite</h4><p>Claude rewrites the sentences that rules can't fix, such as staged contrasts, forced lists of three and empty closers, and keeps every claim. Then it rescans so you see what changed.</p></div>
+  <div><h4>Humanize</h4><p>Fixes that need no judgment: dashes, curly quotes, bold, filler like "in order to", chatbot openers and sign-offs, invisible characters and look-alike letters. It also swaps stock AI words for plain ones, rewrites "not just X, it's Y" contrasts, cuts empty closers and throat-clearing openers, fixes Title Case headings and adds contractions. Code is left alone. Free and instant.</p></div>
+  <div><h4>Deep rewrite</h4><p>Claude rewrites the sentences that rules can't fix, such as staged contrasts, forced lists of three and empty closers, and keeps every claim. It then rescans the result, and if the scanner still flags spots, it runs a second, targeted pass on just those.</p></div>
 </section>
 
 <section id="pricing" class="pricing">
@@ -99,7 +99,7 @@
       <h3>Free</h3>
       <p class="price">$0</p>
       <ul>
-        <li>Unlimited scans and quick cleans</li>
+        <li>Unlimited scans and Humanize runs</li>
         <li>Image to text</li>
         <li>Deep rewrite with your own Anthropic key</li>
       </ul>
@@ -107,9 +107,9 @@
     </div>
     <div class="plan pro">
       <h3>Pro</h3>
-      <p class="price" id="proPrice">$9 / month</p>
+      <p class="price" id="proPrice">₹200 / month</p>
       <ul>
-        <li><span id="proQuota">150</span> deep rewrites a month, no API key needed</li>
+        <li><span id="proQuota">30</span> deep rewrites a month, no API key needed</li>
         <li>Voice matching and all five styles</li>
         <li>Up to 2,000 words per rewrite</li>
       </ul>

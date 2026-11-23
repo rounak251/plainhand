@@ -1,5 +1,5 @@
-import { SYSTEM_PROMPT, buildUserMessage, MAX_WORDS } from "./prompt.js";
-import { ruleClean } from "./clean.js";
+import { SYSTEM_PROMPT, buildUserMessage, buildRevisionMessage, MAX_WORDS } from "./prompt.js";
+import { humanize } from "./humanize.js";
 import { API_BASE, PAYMENT_LINK, PRO_PRICE, PRO_QUOTA } from "./config.js";
 
 const $ = (id) => document.getElementById(id);
@@ -107,10 +107,10 @@ $("cleanBtn").onclick = async () => {
   busy($("cleanBtn"), true, "Cleaning...");
   try {
     const [before, charClean] = await Promise.all([scan(t), callPy("clean", t)]);
-    const cleaned = ruleClean(charClean);
+    const cleaned = humanize(charClean, $("mode").value);
     output.value = cleaned;
     const after = await scan(cleaned);
-    paintScore($("scoreBefore"), before); paintScore($("scoreAfter"), after); paintFindings(after, "What a deep rewrite would still fix");
+    paintScore($("scoreBefore"), before); paintScore($("scoreAfter"), after); paintFindings(after, after._metrics?.ai_tell_score > 20 ? "Still flagged (Deep rewrite fixes these)" : "Still flagged");
   } catch (e) { toast("Quick clean failed: " + e.message); }
   busy($("cleanBtn"), false);
 };
@@ -127,18 +127,34 @@ $("rewriteBtn").onclick = async () => {
   busy($("rewriteBtn"), true, "Rewriting...");
   try {
     const before = await scan(t);
-    paintScore($("scoreBefore"), before);
+    paintScore($("scoreBefore"), before); resetScore($("scoreAfter"));
     const opts = { mode: $("mode").value, sample: $("sample").value, flagged: flaggedLabels(before) };
-    const text = license && API_BASE ? await rewritePro(license, t, opts) : await rewriteByok(apiKey, t, opts);
+    const pro = !!(license && API_BASE);
+    const polish = async (raw) => humanize(await callPy("clean", raw), opts.mode);
+
+    const r1 = pro ? await callPro(license, { text: t, ...opts }) : { text: await callClaude(apiKey, buildUserMessage(t, opts)) };
+    let text = await polish(r1.text), after = await scan(text);
+
+    const issues = issuesOf(after);
+    if ((after._metrics?.ai_tell_score ?? 0) > 20 && issues.length) {
+      $("rewriteBtn").textContent = "Second pass...";
+      const r2 = pro ? await callPro(license, { revise_id: r1.revise_id, issues, mode: opts.mode })
+                     : { text: await callClaude(apiKey, buildRevisionMessage(text, issues, opts)) };
+      const text2 = await polish(r2.text), after2 = await scan(text2);
+      if (after2._metrics.ai_tell_score <= after._metrics.ai_tell_score) { text = text2; after = after2; }
+    }
     output.value = text;
-    const after = await scan(text);
     paintScore($("scoreAfter"), after); paintFindings(after, "Result");
   } catch (e) { toast(e.message, 5000); }
   busy($("rewriteBtn"), false);
 };
 
+const issuesOf = (report) => Object.entries(report)
+  .filter(([k, v]) => k !== "_metrics" && v && v.count > 0)
+  .map(([, v]) => ({ label: v.label, samples: (v.samples || []).slice(0, 2) }));
+
 let sdk;
-async function rewriteByok(apiKey, text, opts) {
+async function callClaude(apiKey, userMessage) {
   sdk ||= (await import("https://esm.sh/@anthropic-ai/sdk@1.12.0")).default;
   const client = new sdk({ apiKey, dangerouslyAllowBrowser: true });
   const stream = client.beta.messages.stream({
@@ -148,7 +164,7 @@ async function rewriteByok(apiKey, text, opts) {
     betas: ["server-side-fallback-2026-07-01"],
     fallbacks: "default",
     system: SYSTEM_PROMPT,
-    messages: [{ role: "user", content: buildUserMessage(text, opts) }],
+    messages: [{ role: "user", content: userMessage }],
   });
   output.value = "";
   stream.on("text", (d) => (output.value += d));
@@ -161,21 +177,20 @@ async function rewriteByok(apiKey, text, opts) {
     throw e;
   }
   if (msg.stop_reason === "refusal") throw new Error("The model declined this text.");
-  const out = msg.content.filter((b) => b.type === "text").map((b) => b.text).join("").trim();
   if (msg.stop_reason === "max_tokens") toast("The rewrite hit the length limit and may be cut off.", 4000);
-  return out;
+  return msg.content.filter((b) => b.type === "text").map((b) => b.text).join("").trim();
 }
 
-async function rewritePro(license, text, opts) {
+async function callPro(license, body) {
   const r = await fetch(API_BASE + "/rewrite", {
     method: "POST",
     headers: { "content-type": "application/json", authorization: "Bearer " + license },
-    body: JSON.stringify({ text, ...opts }),
+    body: JSON.stringify(body),
   });
   const j = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error(j.error || "Rewrite failed (" + r.status + ").");
   if (typeof j.remaining === "number") $("keyStatus").textContent = `Pro: ${j.remaining} rewrites left this month.`;
-  return j.text;
+  return j;
 }
 
 $("copyBtn").onclick = async () => {

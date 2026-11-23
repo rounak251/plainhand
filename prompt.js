@@ -37,6 +37,26 @@ Tells to remove (strongest first):
 24. A heading repeated in the first sentence under it.
 25. Writing about the document instead of its subject: "the table below compares", "this was added to replace".
 
+Write like a person, not a template:
+- Vary sentence length on purpose. Put a few short sentences (under 8 words) next to longer ones (over 25). Do not give every paragraph the same length or shape.
+- Use contractions (it's, don't, you'll) unless the style is academic or technical.
+- Prefer plain, concrete words and verbs. "Use" over "leverage", "help" over "empower", "show" over "underscore".
+- Starting a sentence with And, But or So is fine. Ending a paragraph on a concrete fact instead of a summary line is better.
+- Do not open with a scene-setter ("In today's world...") or close with a moral, a forecast or a call to action the writer did not ask for.
+
+Examples of the kind of change wanted:
+Before: It's not just about the beat riding under the vocals; it's part of the aggression and atmosphere. It's not merely a song, it's a statement.
+After: The heavy beat adds to the aggressive tone.
+Before: Effective time management plays a pivotal role in reducing stress, enhancing focus, and fostering a healthy work-life balance.
+After: Managing your time well cuts stress and makes it easier to focus. It also leaves room for a life outside work.
+Before: The new policy — announced without warning — affects thousands of workers. Experts believe it marks a turning point.
+After: The new policy, announced without warning, affects thousands of workers.
+Before: Great question! Here is an overview. The French Revolution began in 1789 when a financial crisis and food shortages led to widespread unrest. I hope this helps!
+After: The French Revolution began in 1789, when a financial crisis and food shortages led to widespread unrest.
+Before: - **Performance:** Performance has been enhanced through optimized algorithms.
+- **Security:** Security has been strengthened with end-to-end encryption.
+After: The update speeds things up with better algorithms and adds end-to-end encryption.
+
 When not to act: leave watched phrases inside quotations, titles, proper names, and passages that discuss the phrase. Keep details that carry the writer's voice: specific odd details, mixed feelings, dated slang, genuine asides and self-corrections, original spelling choices. Keep the writer's own words where they are already plain; do not swap simple words for fancier ones.
 
 Formatting: keep code blocks, inline code, commands, file paths, identifiers, numbers, units, URLs and link targets exactly as written. Keep the same overall format (markdown stays markdown, plain text stays plain text). Return only the final rewritten text: no preface, no notes, no list of changes.`;
@@ -61,4 +81,19 @@ export function buildUserMessage(text, { mode = "general", sample = "", flagged 
   }
   msg += `\n\nRewrite this draft:\n<draft>\n${text}\n</draft>`;
   return msg;
+}
+
+// Second pass: the scanner still flags specific spots after the first rewrite.
+export function buildRevisionMessage(text, issues, { mode = "general" } = {}) {
+  const list = issues.slice(0, 12).map((i) => `- ${i.label}${i.samples?.length ? ': "' + i.samples.slice(0, 2).map((x) => x.trim()).join('" / "') + '"' : ""}`).join("\n");
+  return `${MODES[mode] || MODES.general}
+
+This draft has already been edited once. A pattern scanner still flags these spots:
+${list}
+
+Fix those spots and anything nearby that reads the same way. Keep everything else as it is. Return the full text only.
+
+<draft>
+${text}
+</draft>`;
 }

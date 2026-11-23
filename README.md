@@ -3,11 +3,11 @@
 Paste a draft written with AI help. Plainhand scores it for AI-writing habits, applies the safe fixes instantly, and (with a key) has Claude rewrite the rest without changing facts, numbers, code or citations.
 
 - **Scan**: sloptrim's `detect.py` (62 machine-checked patterns) runs in the browser through Pyodide. Nothing is uploaded.
-- **Quick clean**: the character layer from `detect.py` plus rule fixes in `clean.js`. Code spans are skipped.
-- **Deep rewrite**: `claude-opus-5-5`, with rules condensed from the humanizer skill (`prompt.js`), five styles and optional voice matching. Visitors either bring their own Anthropic key (sent straight from the browser) or buy Pro.
+- **Humanize** (free): the character layer from `detect.py`, then the rule engine in `humanize.js`: stock-word swaps, contrast and closer rewrites, throat-clearing removal, copula fixes, heading case, contractions, long-sentence splits. Code spans are skipped. On the 7-text test set it moves the mean score from 51 to 10 and leaves human text alone.
+- **Deep rewrite**: `claude-opus-5-5`, with rules condensed from the humanizer skill (`prompt.js`), five styles and optional voice matching. Pass 1 rewrites, the result is polished by `humanize.js` and rescanned, and if spots are still flagged a second pass fixes only those. Visitors either bring their own Anthropic key (sent straight from the browser) or buy Pro.
 - **Image to text**: Tesseract.js OCR for screenshots (file picker or paste).
 
-Static site: `index.html`, `app.js`, `clean.js`, `prompt.js`, `pyworker.js`, `config.js`, `style.css`, `py/detect.py`.
+Static site: `index.html`, `app.js`, `humanize.js`, `prompt.js`, `pyworker.js`, `config.js`, `style.css`, `py/detect.py`.
 
 ## Turning on Pro (paid plan)
 
@@ -26,9 +26,9 @@ Static site: `index.html`, `app.js`, `clean.js`, `prompt.js`, `pyworker.js`, `co
 
 After checkout the page calls `/claim`, which checks the session with Stripe and issues a `ph_live_` key (the same key if called twice). `/rewrite` meters `QUOTA` rewrites per calendar month and re-checks the subscription once a day.
 
-## Cost per rewrite
+## Price and cost per rewrite
 
-Opus 5.5 is $4 / $20 per million input / output tokens. A 500-word rewrite is about 3k input and 1.5-3k output tokens including thinking, roughly $0.04-0.07. At the default 150 rewrites a month, a heavy user costs about $6-10, so $9 a month only covers average users. Raise the price or lower `QUOTA` (wrangler.toml and `config.js`) if usage runs high.
+Pro is ₹200 a month (about $2.35) for 30 deep rewrites. Opus 5.5 is $4 / $20 per million input / output tokens. One 500-word pass is about 4k input and 1.5-3k output tokens including thinking, roughly $0.05. The second, targeted pass runs only when the first result still scores above 20 and is free for the user. A user who spends all 30 rewrites costs about $1.5-2.5 (₹130-210), so the plan stays slightly profitable even for heavy users and clearly profitable for typical ones. Change `QUOTA` in `worker/wrangler.toml` and `PRO_QUOTA` / `PRO_PRICE` in `config.js` together.
 
 ## What it does not claim
 
